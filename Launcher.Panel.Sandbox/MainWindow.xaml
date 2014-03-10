@@ -1,0 +1,11 @@
+﻿<Window x:Class="Launcher.Panel.Sandbox.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lp="clr-namespace:Launcher.Panel;assembly=Launcher.Panel"
+        Title="MainWindow" Height="419" Width="534">
+    <Grid>
+       <lp:LauncherPanelPage>
+           <Border />
+       </lp:LauncherPanelPage>
+    </Grid>
+</Window>
