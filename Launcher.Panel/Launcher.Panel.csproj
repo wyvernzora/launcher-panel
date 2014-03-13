@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -47,9 +48,11 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LauncherPanel.cs" />
-    <Compile Include="LauncherPanel.dp.cs" />
-    <Compile Include="LauncherPanelPage.cs" />
+    <Compile Include="DelayScheduler.cs" />
+    <Compile Include="PanoramaPanel.cs" />
+    <Compile Include="PanoramaPanel.dp.cs" />
+    <Compile Include="PanoramaPanelDragBehavior.cs" />
+    <Compile Include="PanoramaPanelPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

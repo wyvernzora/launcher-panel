@@ -1,5 +1,5 @@
 ﻿// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Launcher.Panel/LauncherPanel.dp.cs
+// Launcher.Panel/PanoramaPanel.dp.cs
 // --------------------------------------------------------------------------------
 // Copyright (c) 2014, Jieni Luchijinzhou a.k.a Aragorn Wyvernzora
 // 
@@ -24,6 +24,7 @@
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -34,7 +35,7 @@ namespace Launcher.Panel
     /// <summary>
     ///     Paged wrap panel witth fluid drag-and-drop behavior.
     /// </summary>
-    public partial class LauncherPanel
+    public partial class PanoramaPanel
     {
         // Default Values
         protected const Double DefaultScale = 1.0;
@@ -59,12 +60,14 @@ namespace Launcher.Panel
         ///     Easing Dependency Property
         /// </summary>
         public static readonly DependencyProperty EasingProperty =
-            DependencyProperty.Register("Easing", typeof(EasingFunctionBase), typeof(LauncherPanel),
+            DependencyProperty.Register("Easing", typeof(EasingFunctionBase), typeof(PanoramaPanel),
                 new FrameworkPropertyMetadata(OnEasingChanged));
 
         /// <summary>
         ///     Gets or sets the easing function for all transitions within the panel.
         /// </summary>
+        [Category("Transitions")]
+        [Description("Defines the easing function for all animated transitions.")]
         public EasingFunctionBase Easing
         {
             get { return (EasingFunctionBase) GetValue(EasingProperty); }
@@ -78,7 +81,7 @@ namespace Launcher.Panel
         /// <param name="e"></param>
         private static void OnEasingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            LauncherPanel panel = d as LauncherPanel;
+            PanoramaPanel panel = d as PanoramaPanel;
             if (panel != null)
                 panel.OnEasingChanged((EasingFunctionBase) e.OldValue, (EasingFunctionBase) e.NewValue);
         }
@@ -100,12 +103,14 @@ namespace Launcher.Panel
         ///     DragScale Dependency Property
         /// </summary>
         public static readonly DependencyProperty DragScaleProperty =
-            DependencyProperty.Register("DragScale", typeof(double), typeof(LauncherPanel),
+            DependencyProperty.Register("DragScale", typeof(double), typeof(PanoramaPanel),
                 new FrameworkPropertyMetadata(DefaultDragScale, OnDragScaleChanged));
 
         /// <summary>
         ///     Gets or sets the scale of the dragged item.
         /// </summary>
+        [Category("Transitions")]
+        [Description("Defines the scaling factor of the element when being dragged.")]
         public double DragScale
         {
             get { return (double) GetValue(DragScaleProperty); }
@@ -119,7 +124,7 @@ namespace Launcher.Panel
         /// <param name="e">DependencyProperty changed event arguments</param>
         private static void OnDragScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            LauncherPanel panel = (LauncherPanel) d;
+            PanoramaPanel panel = (PanoramaPanel) d;
             double oldDragScale = (double) e.OldValue;
             double newDragScale = panel.DragScale;
             panel.OnDragScaleChanged(oldDragScale, newDragScale);
@@ -142,12 +147,14 @@ namespace Launcher.Panel
         ///     DragOpacity Dependency Property
         /// </summary>
         public static readonly DependencyProperty DragOpacityProperty =
-            DependencyProperty.Register("DragOpacity", typeof(double), typeof(LauncherPanel),
+            DependencyProperty.Register("DragOpacity", typeof(double), typeof(PanoramaPanel),
                 new FrameworkPropertyMetadata(DefaultDragOpacity, OnDragOpacityChanged, CoerceDragOpacity));
 
         /// <summary>
         ///     Gets or sets the opacity of the dragged item.
         /// </summary>
+        [Category("Transitions")]
+        [Description("Defines the opacity of an element while being dragged.")]
         public double DragOpacity
         {
             get { return (double) GetValue(DragOpacityProperty); }
@@ -179,7 +186,7 @@ namespace Launcher.Panel
         /// <param name="e">DependencyProperty changed event arguments</param>
         private static void OnDragOpacityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            LauncherPanel panel = (LauncherPanel) d;
+            PanoramaPanel panel = (PanoramaPanel) d;
             double oldDragOpacity = (double) e.OldValue;
             double newDragOpacity = panel.DragOpacity;
             panel.OnDragOpacityChanged(oldDragOpacity, newDragOpacity);
@@ -202,13 +209,15 @@ namespace Launcher.Panel
         ///     Orientation Dependency Property
         /// </summary>
         public static readonly DependencyProperty OrientationProperty =
-            DependencyProperty.Register("Orientation", typeof(Orientation), typeof(LauncherPanel),
-                new FrameworkPropertyMetadata(Orientation.Horizontal, OnOrientationChanged));
+            DependencyProperty.Register("Orientation", typeof(Orientation), typeof(PanoramaPanel),
+                new FrameworkPropertyMetadata(Orientation.Horizontal, FrameworkPropertyMetadataOptions.AffectsMeasure, OnOrientationChanged));
 
         /// <summary>
         ///     Gets or sets the Orientation property. This dependency property
         ///     indicates the orientation of arrangement of items in the panel.
         /// </summary>
+        [Category("Layout")]
+        [Description("Determines the orientation of pages in the panel.")]
         public Orientation Orientation
         {
             get { return (Orientation) GetValue(OrientationProperty); }
@@ -222,7 +231,7 @@ namespace Launcher.Panel
         /// <param name="e">DependencyProperty changed event arguments</param>
         private static void OnOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            LauncherPanel panel = (LauncherPanel) d;
+            PanoramaPanel panel = (PanoramaPanel) d;
             Orientation oldOrientation = (Orientation) e.OldValue;
             Orientation newOrientation = panel.Orientation;
             panel.OnOrientationChanged(oldOrientation, newOrientation);
@@ -246,12 +255,13 @@ namespace Launcher.Panel
         /// ActivePage Dependency Property.
         /// </summary>
         public static readonly DependencyProperty ActivePageProperty =
-            DependencyProperty.Register("ActivePage", typeof(Int32), typeof(LauncherPanel),
-                new FrameworkPropertyMetadata(0, OnActivePageChanged));
+            DependencyProperty.Register("ActivePage", typeof(Int32), typeof(PanoramaPanel),
+                new FrameworkPropertyMetadata(-1, OnActivePageChanged));
 
         /// <summary>
         /// Gets or sets the index of the active page.
         /// </summary>
+        
         public Int32 ActivePage
         {
             get { return (Int32) GetValue(ActivePageProperty); }
@@ -265,7 +275,7 @@ namespace Launcher.Panel
         /// <param name="e"></param>
         private static void OnActivePageChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            var panel = o as LauncherPanel;
+            var panel = o as PanoramaPanel;
             if (panel != null)
                 panel.OnActivePageChanged((Int32)e.OldValue, (Int32)e.NewValue);
         }
@@ -279,5 +289,186 @@ namespace Launcher.Panel
         { }
 
         #endregion
+
+        #region CellHeight
+
+        /// <summary>
+        /// ItemHeight Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty CellHeightProperty =
+            DependencyProperty.Register("CellHeight", typeof(double), typeof(PanoramaPanel),
+                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsMeasure, OnCellHeightChanged));
+
+        /// <summary>
+        /// Gets or sets the ItemHeight property. This dependency property 
+        /// indicates the height of each item.
+        /// </summary>
+        [Category("Layout")]
+        [Description("Height of a single item cell")]
+        public double CellHeight
+        {
+            get { return (double)GetValue(CellHeightProperty); }
+            set { SetValue(CellHeightProperty, value); }
+        }
+
+        /// <summary>
+        /// Handles changes to the ItemHeight property.
+        /// </summary>
+        /// <param name="d">LauncherPanel</param>
+        /// <param name="e">DependencyProperty changed event arguments</param>
+        private static void OnCellHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PanoramaPanel fwPanel = (PanoramaPanel)d;
+            double oldItemHeight = (double)e.OldValue;
+            double newItemHeight = fwPanel.CellHeight;
+            fwPanel.OnCellHeightChanged(oldItemHeight, newItemHeight);
+        }
+
+        /// <summary>
+        /// Provides derived classes an opportunity to handle changes to the ItemHeight property.
+        /// </summary>
+        /// <param name="oldItemHeight">Old Value</param>
+        /// <param name="newItemHeight">New Value</param>
+        protected void OnCellHeightChanged(double oldItemHeight, double newItemHeight)
+        { }
+
+        #endregion
+
+        #region CellWidth
+
+        /// <summary>
+        /// ItemWidth Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty CellWidthProperty =
+            DependencyProperty.Register("CellWidth", typeof(double), typeof(PanoramaPanel),
+                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsMeasure, OnCellWidthChanged));
+
+        /// <summary>
+        /// Gets or sets the ItemWidth property. This dependency property 
+        /// indicates the width of each item.
+        /// </summary>
+        [Category("Layout")]
+        [Description("Width of a single item cell")]
+        public double CellWidth
+        {
+            get { return (double)GetValue(CellWidthProperty); }
+            set { SetValue(CellWidthProperty, value); }
+        }
+
+        /// <summary>
+        /// Handles changes to the ItemWidth property.
+        /// </summary>
+        /// <param name="d">LauncherPanel</param>
+        /// <param name="e">DependencyProperty changed event arguments</param>
+        private static void OnCellWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PanoramaPanel fwPanel = (PanoramaPanel)d;
+            double oldItemWidth = (double)e.OldValue;
+            double newItemWidth = fwPanel.CellWidth;
+            fwPanel.OnCellWidthChanged(oldItemWidth, newItemWidth);
+        }
+
+        /// <summary>
+        /// Provides derived classes an opportunity to handle changes to the ItemWidth property.
+        /// </summary>
+        /// <param name="oldItemWidth">Old Value</param>
+        /// <param name="newItemWidth">New Value</param>
+        protected void OnCellWidthChanged(double oldItemWidth, double newItemWidth)
+        {
+
+        }
+
+        #endregion
+
+        #region PageHeight
+
+        /// <summary>
+        /// PageHeight Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty PageHeightProperty =
+            DependencyProperty.Register("PageHeight", typeof(double), typeof(PanoramaPanel),
+                new FrameworkPropertyMetadata(100.0, /* FrameworkPropertyMetadataOptions.AffectsMeasure, */ OnPageHeightChanged));
+
+        /// <summary>
+        /// Gets or sets the height of a panel page.
+        /// </summary>
+        [Category("Layout")]
+        [Description("Height of a single page.")]
+        public double PageHeight
+        {
+            get { return (double)GetValue(PageHeightProperty); }
+            set { SetValue(PageHeightProperty, value); }
+        }
+
+        /// <summary>
+        /// Handles changes to the PageHeight property.
+        /// </summary>
+        /// <param name="d">LauncherPanel</param>
+        /// <param name="e">DependencyProperty changed event arguments</param>
+        private static void OnPageHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PanoramaPanel fwPanel = (PanoramaPanel)d;
+            double oldHeight = (double)e.OldValue;
+            double newHeight = fwPanel.CellHeight;
+            fwPanel.OnCellHeightChanged(oldHeight, newHeight);
+            fwPanel.InvalidateMeasure();
+        }
+
+        /// <summary>
+        /// Provides derived classes an opportunity to handle changes to the PageHeight property.
+        /// </summary>
+        /// <param name="oldHeight">Old Value</param>
+        /// <param name="newHeight">New Value</param>
+        protected void OnPageHeightChanged(double oldHeight, double newHeight)
+        { InvalidateMeasure(); }
+
+        #endregion
+
+        #region PageWidth
+
+        /// <summary>
+        /// PageWidth Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty PageWidthProperty =
+            DependencyProperty.Register("PageWidth", typeof(double), typeof(PanoramaPanel),
+                new FrameworkPropertyMetadata(100.0, /*FrameworkPropertyMetadataOptions.AffectsMeasure, */ OnPageWidthChanged));
+
+        /// <summary>
+        /// Gets or sets the width of a panel page.
+        /// </summary>
+        [Category("Layout")]
+        [Description("Width of a single page.")]
+        public double PageWidth
+        {
+            get { return (double)GetValue(PageWidthProperty); }
+            set { SetValue(PageWidthProperty, value); }
+        }
+
+        /// <summary>
+        /// Handles changes to the PageWidth property.
+        /// </summary>
+        /// <param name="d">LauncherPanel</param>
+        /// <param name="e">DependencyProperty changed event arguments</param>
+        private static void OnPageWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PanoramaPanel fwPanel = (PanoramaPanel)d;
+            double oldWidth = (double)e.OldValue;
+            double newWidth = fwPanel.PageWidth;
+            fwPanel.OnPageWidthChanged(oldWidth, newWidth);
+            fwPanel.InvalidateMeasure();
+        }
+
+        /// <summary>
+        /// Provides derived classes an opportunity to handle changes to the ItemWidth property.
+        /// </summary>
+        /// <param name="oldWidth">Old Value</param>
+        /// <param name="newWidth">New Value</param>
+        protected void OnPageWidthChanged(double oldWidth, double newWidth)
+        {
+            InvalidateMeasure();
+        }
+
+        #endregion
+
     }
 }

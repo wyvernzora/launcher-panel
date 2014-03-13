@@ -27,6 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Markup;
+using CPanel = System.Windows.Controls.Panel;
 
 namespace Launcher.Panel
 {
@@ -39,14 +40,15 @@ namespace Launcher.Panel
     ///     is handled entirely by the parent panel.
     /// </remarks>
     [ContentProperty("Children")]
-    public class LauncherPanelPage : UIElement, ICollection<UIElement>
+    public class PanoramaPanelPage : UIElement, ICollection<UIElement>
     {
+        protected PanoramaPanel panel;
         protected List<UIElement> children;
 
         /// <summary>
         ///     Constructor.
         /// </summary>
-        public LauncherPanelPage()
+        public PanoramaPanelPage()
         {
             children = new List<UIElement>();
         }
@@ -59,6 +61,25 @@ namespace Launcher.Panel
         public List<UIElement> Children
         {
             get { return children; }
+        }
+
+        /// <summary>
+        /// Gets or sets the parent Panorama panel.
+        /// </summary>
+        public PanoramaPanel Parent
+        {
+            get { return panel; }
+            set { panel = value; }
+        }
+
+        /// <summary>
+        /// Gets the element at the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public UIElement this[int index]
+        {
+            get { return children[index]; }
         }
 
         #endregion

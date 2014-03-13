@@ -1,11 +1,41 @@
-﻿<Window x:Class="Launcher.Panel.Sandbox.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lp="clr-namespace:Launcher.Panel;assembly=Launcher.Panel"
-        Title="MainWindow" Height="419" Width="534">
-    <Grid>
-       <lp:LauncherPanelPage>
-           <Border />
-       </lp:LauncherPanelPage>
-    </Grid>
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="Launcher.Panel.Sandbox.MainWindow"
+        Title="MainWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+	<Grid x:Name="grid" Width="398" Height="398">
+		<lp:PanoramaPanel HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" 
+			CellHeight="100" CellWidth="100" Background="#FF2C2C2C" PageHeight="398" PageWidth="398" DragOpacity="0.6">
+			<lp:PanoramaPanel.Children>
+				<lp:PanoramaPanelPage/>
+			</lp:PanoramaPanel.Children>
+			<lp:PanoramaPanelPage>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Padding="0" Margin="5">
+                    
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior DragDelay="0:0:1.05" />
+					</i:Interaction.Behaviors>
+                    
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Padding="0" Margin="5"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Padding="0" Margin="5"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Padding="0" Margin="5"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Margin="5" Padding="0"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Margin="5" Padding="0"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Padding="0" Margin="5"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Padding="0" Margin="5"/>
+			</lp:PanoramaPanelPage>
+			<lp:PanoramaPanelPage>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Height="90" Width="90"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Height="90" Width="90"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Height="90" Width="90"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Height="90" Width="90"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Margin="5"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Margin="5"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Height="90" Width="90"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Height="90" Width="90"/>
+			</lp:PanoramaPanelPage>
+		</lp:PanoramaPanel>
+	</Grid>
 </Window>
