@@ -23,6 +23,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
@@ -40,7 +41,7 @@ namespace Launcher.Panel
     ///     is handled entirely by the parent panel.
     /// </remarks>
     [ContentProperty("Children")]
-    public class PanoramaPanelPage : UIElement, ICollection<UIElement>
+    public class PanoramaPanelPage : UIElement, IList<UIElement>
     {
         protected PanoramaPanel panel;
         protected List<UIElement> children;
@@ -70,16 +71,6 @@ namespace Launcher.Panel
         {
             get { return panel; }
             set { panel = value; }
-        }
-
-        /// <summary>
-        /// Gets the element at the specified index.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public UIElement this[int index]
-        {
-            get { return children[index]; }
         }
 
         #endregion
@@ -167,6 +158,39 @@ namespace Launcher.Panel
 
         #endregion
 
+        #region IList<UIElement> Members
+
+        public int IndexOf(UIElement item)
+        {
+            return children.IndexOf(item);
+        }
+
+        public void Insert(int index, UIElement item)
+        {
+            children.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            children.RemoveAt(index);
+        }
+
+        public UIElement this[int index]
+        {
+            get
+            {
+                return children[index];
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         #endregion
+
+        #endregion
+
+
     }
 }

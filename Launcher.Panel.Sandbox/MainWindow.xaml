@@ -7,6 +7,9 @@
 	<Grid x:Name="grid" Width="398" Height="398">
 		<lp:PanoramaPanel HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" 
 			CellHeight="100" CellWidth="100" Background="#FF2C2C2C" PageHeight="398" PageWidth="398" DragOpacity="0.6">
+			<lp:PanoramaPanel.Easing>
+				<BackEase EasingMode="EaseOut" Amplitude="0.35"/>
+			</lp:PanoramaPanel.Easing>
 			<lp:PanoramaPanel.Children>
 				<lp:PanoramaPanelPage/>
 			</lp:PanoramaPanel.Children>

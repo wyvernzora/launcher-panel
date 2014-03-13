@@ -142,7 +142,19 @@ namespace Launcher.Panel
 
         protected void UpdateFluidLayout(Boolean ease)
         {
-            InvalidateVisual();
+            if (disableAnimation)
+                InvalidateVisual();
+            else
+            {
+                foreach (var page in pages.Cast<PanoramaPanelPage>())
+                    for (int i = 0; i < page.Count; i++) 
+                    {
+                        var cell = GetCellRect(page, i);
+                        var transition = CreateTransition(page[i], new Point(cell.X, cell.Y),
+                            TimeSpan.FromMilliseconds(DefaultTransitionDuration), Easing);
+                        transition.Begin();
+                    }
+            }
         }
 
         #region Layout
@@ -219,7 +231,6 @@ namespace Launcher.Panel
         /// <param name="translateY">Translation offset along the Y axis.</param>
         /// <param name="scaleX">Scale along the X axis.</param>
         /// <param name="scaleY">Scale along the Y axis.</param>
-        /// <param name="rotationAngle">Rotation angle.</param>
         /// <returns></returns>
         protected TransformGroup CreateTransform(double translateX, double translateY, double scaleX, double scaleY)
         {
@@ -317,10 +328,12 @@ namespace Launcher.Panel
         #region Drag & Drop
 
         private Point dragStart;
-        private UIElement dragging;
         private UIElement dragged;
+        private UIElement dragging;
+        private Int32 dragSourcePage;
+        private Int32 dragSourceIndex;
 
-        internal void OnDragStart(FrameworkElement child, Point origin)
+        internal void OnDragStart(FrameworkElement child, Point origin, Point position)
         {
             if (child == null)
                 return;
@@ -336,6 +349,10 @@ namespace Launcher.Panel
                 child.RenderTransform = CreateTransform(translatePosition.X, translatePosition.Y, DragScale, DragScale);
                 // Capture further mouse events
                 child.CaptureMouse();
+                // Record the initial position of the element
+                dragSourcePage = GetPageIndex(position);
+                dragSourceIndex = GetCellIndex(position);
+                // 
                 dragging = child;
                 dragged = null;
             });
@@ -367,7 +384,17 @@ namespace Launcher.Panel
                 // Get current page/cell
                 var page = GetPageIndex(position);
                 var cell = GetCellIndex(position);
-                
+                if (cell < 0 || cell >= rowSize * columnSize || page < 0 || page >= pages.Count)
+                {
+                    // Cancel movement (move back to the original position)
+                    page = dragSourcePage;
+                    cell = dragSourceIndex;
+                }
+
+                // Create transition
+                //var cellRect = GetCellRect(pages[page], cell);
+                //var transition = CreateTransition(child, new Point(cellRect.X, cellRect.Y),
+                //    TimeSpan.FromMilliseconds(DefaultTransitionDuration), Easing);
 
                 // Reset opacity
                 child.Opacity = DefaultOpacity;
@@ -378,7 +405,10 @@ namespace Launcher.Panel
                 dragged = dragging;
                 dragging = null;
 
-                
+                // Begin transition
+                //transition.Begin();
+
+                UpdateFluidLayout(true);
             });
         }
 

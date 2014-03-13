@@ -124,7 +124,7 @@ namespace Launcher.Panel
                     // Get mouse position
                     var position = Mouse.GetPosition(AssociatedObject);
                     if (panel != null)
-                        panel.OnDragStart(AssociatedObject, position);
+                        panel.OnDragStart(AssociatedObject, position, Mouse.GetPosition(panel));
                 });
             }
         }
