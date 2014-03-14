@@ -51,7 +51,7 @@ namespace Launcher.Panel
         /// </summary>
         public static readonly DependencyProperty DragDelayProperty =
             DependencyProperty.Register("DragDelay", typeof(TimeSpan), typeof(PanoramaPanelDragBehavior),
-                new PropertyMetadata(TimeSpan.FromMilliseconds(50)));
+                new PropertyMetadata(TimeSpan.FromMilliseconds(300)));
 
         /// <summary>
         /// Gets or sets the delay before the drag operation is initialized.
@@ -128,6 +128,7 @@ namespace Launcher.Panel
                 });
             }
         }
+
         private void PreviewMouseMove(object sender, MouseEventArgs e)
         {
             // Test if mouse moved out of range
@@ -178,7 +179,7 @@ namespace Launcher.Panel
             if (e.ChangedButton == DragButton)
             {
                 // Cancel scheduled response
-                scheduler.Cancel();
+                //scheduler.Cancel();
                 
                 // Notify PanoramaPanel
                 var position = Mouse.GetPosition(AssociatedObject);

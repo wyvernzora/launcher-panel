@@ -34,11 +34,9 @@ namespace Launcher.Panel
     /// </summary>
     public class DelayScheduler
     {
-        private readonly Timer timer;
+        private readonly Dispatcher dispatcher;
+        private Timer timer;
 
-        private Dispatcher dispatcher;
-        private Action handler;
-        
         /// <summary>
         ///     Constructor.
         ///     Specifies a dispatcher to run the handler on.
@@ -47,29 +45,27 @@ namespace Launcher.Panel
         ///     Dispatcher that owns the event-raising object,
         ///     null if handler can be invoked on the timer thread.
         /// </param>
-        /// <param name="handler">Event handler.</param>
         public DelayScheduler(Dispatcher dispatcher)
         {
             this.dispatcher = dispatcher;
-
-            timer = new Timer
-            {
-                AutoReset = false
-            };
-            timer.Elapsed += (@s, e) => dispatcher.Invoke(DispatcherPriority.Input, handler);
         }
 
         /// <summary>
-        /// Schedules an event response to run after a delay.
+        ///     Schedules an event response to run after a delay.
         /// </summary>
         /// <param name="delay"></param>
         /// <param name="handler"></param>
         public void Schedule(TimeSpan delay, Action handler)
         {
-            this.handler = handler;
+            Cancel();
 
-            timer.Stop();
-            timer.Interval = delay.Milliseconds;
+            timer = new Timer(delay.TotalMilliseconds)
+            {
+                AutoReset = false
+            };
+            timer.Elapsed += (@s, e) =>
+                dispatcher.Invoke(DispatcherPriority.Input, handler);
+
             timer.Start();
         }
 
@@ -78,7 +74,11 @@ namespace Launcher.Panel
         /// </summary>
         public void Cancel()
         {
-            timer.Stop();
+            if (timer != null)
+            {
+                timer.Stop();
+                timer.Dispose();
+            }
         }
     }
 }

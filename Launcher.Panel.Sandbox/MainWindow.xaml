@@ -17,7 +17,7 @@
 				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Padding="0" Margin="5">
                     
 					<i:Interaction.Behaviors>
-						<lp:PanoramaPanelDragBehavior DragDelay="0:0:1.05" />
+						<lp:PanoramaPanelDragBehavior DragDelay="0:0:0.3" />
 					</i:Interaction.Behaviors>
                     
 				</Border>

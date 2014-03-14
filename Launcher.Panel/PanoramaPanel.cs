@@ -114,11 +114,13 @@ namespace Launcher.Panel
             // If animation is disabled, reinitialize the layout
             if (disableAnimation && Children.Count > 0)
             {
-                foreach (var page in pages.Cast<PanoramaPanelPage>())
+                for (int p = 0; p < pages.Count; p++)
+                {
+                    var page = pages[p];
                     for (int i = 0; i < page.Count; i++)
                     {
                         // Get the cell position
-                        var cell = GetCellRect(page, i);
+                        var cell = GetCellRect(p, i);
 
                         // Arrange the element at (0, 0)...
                         page[i].Arrange(new Rect(0, 0, CellWidth, CellHeight));
@@ -126,6 +128,7 @@ namespace Launcher.Panel
                         // ...then move it to the correct location
                         page[i].RenderTransform = CreateTransform(cell.X, cell.Y, DefaultScale, DefaultScale);
                     }
+                }
 
                 if (!DesignerProperties.GetIsInDesignMode(this))
                     disableAnimation = false;
@@ -146,22 +149,25 @@ namespace Launcher.Panel
                 InvalidateVisual();
             else
             {
-                foreach (var page in pages.Cast<PanoramaPanelPage>())
-                    for (int i = 0; i < page.Count; i++) 
+                for (int p = 0; p < pages.Count; p++)
+                {
+                    var page = pages[p];
+                    for (int i = 0; i < page.Count; i++)
                     {
-                        var cell = GetCellRect(page, i);
+                        var cell = GetCellRect(p, i);
                         var transition = CreateTransition(page[i], new Point(cell.X, cell.Y),
                             TimeSpan.FromMilliseconds(DefaultTransitionDuration), Easing);
                         transition.Begin();
                     }
+                }
             }
         }
 
         #region Layout
 
-        protected Rect GetPageRect(PanoramaPanelPage page)
+        protected Rect GetPageRect(Int32 index)
         {
-            var index = pages.IndexOf(page);
+            //var index = pages.IndexOf(page);
             if (index < 0) throw new Exception("Page not found.");
 
             return Orientation == Orientation.Horizontal ? 
@@ -169,7 +175,7 @@ namespace Launcher.Panel
                 new Rect(0, index * PageHeight, PageWidth, PageHeight);
         }
 
-        protected Rect GetGridRect(PanoramaPanelPage page)
+        protected Rect GetGridRect(Int32 page)
         {
             // Get the available rect
             var pageRect = GetPageRect(page);
@@ -187,7 +193,7 @@ namespace Launcher.Panel
             return new Rect(x, y, rowSize * CellWidth, columnSize * CellHeight);
         }
 
-        protected Rect GetCellRect(PanoramaPanelPage page, Int32 index)
+        protected Rect GetCellRect(Int32 page, Int32 index)
         {
             // Get the rectangle of the grid for the page
             var gridRect = GetGridRect(page);
@@ -213,7 +219,7 @@ namespace Launcher.Panel
             var pageIndex = GetPageIndex(point);
 
             // Convert to point relative to the page grid
-            var pageGrid = GetGridRect(pages[pageIndex]);
+            var pageGrid = GetGridRect(pageIndex);
             point.X -= pageGrid.X;
             point.Y -= pageGrid.Y;
             
@@ -360,7 +366,7 @@ namespace Launcher.Panel
 
         internal void OnDragMove(FrameworkElement child, Point origin, Point position)
         {
-            if (child == null)
+            if (child == null || dragging == null)
                 return;
 
             Dispatcher.Invoke(() =>
@@ -369,8 +375,31 @@ namespace Launcher.Panel
                 child.RenderTransform = CreateTransform(position.X - dragStart.X, position.Y - dragStart.Y, DragScale,
                     DragScale);
 
+                // Get current position of the dragging operation
+                var page = GetPageIndex(position);
+                var cell = GetCellIndex(position);
+
+                // If the location is valid...
+                if (page >= 0 && page < pages.Count && cell >= 0 && cell < pages[page].Count
+                    && pages[page][cell] != dragging)
+                {
+                    // Remove the element from the drag source
+                    pages[dragSourcePage].RemoveAt(dragSourceIndex);
+
+                    // Insert it into the current position
+                    pages[page].Insert(cell, dragging);
+
+                    // Set new drag source
+                    dragSourcePage = page;
+                    dragSourceIndex = cell;
+
+                    // Update Layout
+                    UpdateFluidLayout(true);
+                }
+
+
                 // TODO Update Layout on move
-                
+
             });
         }
 
@@ -384,18 +413,13 @@ namespace Launcher.Panel
                 // Get current page/cell
                 var page = GetPageIndex(position);
                 var cell = GetCellIndex(position);
-                if (cell < 0 || cell >= rowSize * columnSize || page < 0 || page >= pages.Count)
+                var grid = GetGridRect(page);
+                if (page < 0 || page >= pages.Count || !grid.Contains(position))
                 {
-                    // Cancel movement (move back to the original position)
                     page = dragSourcePage;
                     cell = dragSourceIndex;
                 }
-
-                // Create transition
-                //var cellRect = GetCellRect(pages[page], cell);
-                //var transition = CreateTransition(child, new Point(cellRect.X, cellRect.Y),
-                //    TimeSpan.FromMilliseconds(DefaultTransitionDuration), Easing);
-
+                
                 // Reset opacity
                 child.Opacity = DefaultOpacity;
                 child.SetValue(ZIndexProperty, TransitionZ);
@@ -404,10 +428,7 @@ namespace Launcher.Panel
                 // Keep a reference
                 dragged = dragging;
                 dragging = null;
-
-                // Begin transition
-                //transition.Begin();
-
+                
                 UpdateFluidLayout(true);
             });
         }
