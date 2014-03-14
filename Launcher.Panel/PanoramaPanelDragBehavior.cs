@@ -179,7 +179,7 @@ namespace Launcher.Panel
             if (e.ChangedButton == DragButton)
             {
                 // Cancel scheduled response
-                //scheduler.Cancel();
+                scheduler.Cancel();
                 
                 // Notify PanoramaPanel
                 var position = Mouse.GetPosition(AssociatedObject);
