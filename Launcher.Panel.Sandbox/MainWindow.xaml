@@ -17,7 +17,7 @@
 				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Padding="0" Margin="5">
                     
 					<i:Interaction.Behaviors>
-						<lp:PanoramaPanelDragBehavior DragDelay="0:0:0.3" />
+						<lp:PanoramaPanelDragBehavior/>
 					</i:Interaction.Behaviors>
                     
 				</Border>
@@ -58,14 +58,46 @@
 				</Border>
 			</lp:PanoramaPanelPage>
 			<lp:PanoramaPanelPage>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Height="90" Width="90"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Height="90" Width="90"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Height="90" Width="90"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Height="90" Width="90"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Margin="5"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Margin="5"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Height="90" Width="90"/>
-				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Height="90" Width="90"/>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Height="90" Width="90">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Height="90" Width="90">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Height="90" Width="90">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Height="90" Width="90">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF69A6FF" Margin="5">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FF51FFCF" Margin="5">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFB8FFA8" Height="90" Width="90">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
+				<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Height="90" Width="90">
+					<i:Interaction.Behaviors>
+						<lp:PanoramaPanelDragBehavior/>
+					</i:Interaction.Behaviors>
+				</Border>
 			</lp:PanoramaPanelPage>
 		</lp:PanoramaPanel>
 	</Grid>

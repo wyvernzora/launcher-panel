@@ -27,6 +27,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 
 namespace Launcher.Panel
@@ -109,7 +110,7 @@ namespace Launcher.Panel
         /// <summary>
         ///     Gets or sets the scale of the dragged item.
         /// </summary>
-        [Category("Transitions")]
+        [Category("Drag & Drop")]
         [Description("Defines the scaling factor of the element when being dragged.")]
         public double DragScale
         {
@@ -153,7 +154,7 @@ namespace Launcher.Panel
         /// <summary>
         ///     Gets or sets the opacity of the dragged item.
         /// </summary>
-        [Category("Transitions")]
+        [Category("Drag & Drop")]
         [Description("Defines the opacity of an element while being dragged.")]
         public double DragOpacity
         {
@@ -261,7 +262,7 @@ namespace Launcher.Panel
         /// <summary>
         /// Gets or sets the index of the active page.
         /// </summary>
-        
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public Int32 ActivePage
         {
             get { return (Int32) GetValue(ActivePageProperty); }
@@ -470,5 +471,48 @@ namespace Launcher.Panel
 
         #endregion
 
+        // PanoramaPanelDragBehavior Interfacing
+        #region DragButton
+
+        /// <summary>
+        ///     DragButton Dependency Property.
+        /// </summary>
+        public static readonly DependencyProperty DragButtonProperty =
+            DependencyProperty.Register("DragButton", typeof(MouseButton), typeof(PanoramaPanel),
+                new PropertyMetadata(MouseButton.Left));
+        
+        /// <summary>
+        ///     Gets or sets the mouse button that initiates the drag operation.
+        /// </summary>
+        [Category("Drag & Drop")]
+        public MouseButton DragButton
+        {
+            get { return (MouseButton)GetValue(DragButtonProperty); }
+            set { SetValue(DragButtonProperty, value); }
+        }
+
+        #endregion
+
+        #region DragDelay
+
+        /// <summary>
+        ///     DragDelay Dependency Property.
+        /// </summary>
+        public static readonly DependencyProperty DragDelayProperty =
+            DependencyProperty.Register("DragDelay", typeof(TimeSpan), typeof(PanoramaPanel),
+                new PropertyMetadata(TimeSpan.FromMilliseconds(300)));
+
+        /// <summary>
+        ///     Gets or sets the delay before the drag operation is initialized.
+        ///     In other words, the "click-and-hold" delay.
+        /// </summary>
+        [Category("Drag & Drop")]
+        public TimeSpan DragDelay
+        {
+            get { return (TimeSpan)GetValue(DragDelayProperty); }
+            set { SetValue(DragDelayProperty, value); }
+        }
+
+        #endregion
     }
 }

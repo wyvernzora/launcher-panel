@@ -408,6 +408,22 @@ namespace Launcher.Panel
                         dragSourcePage = page;
                         dragSourceIndex = cell;
 
+                        // Cascade elements from "overcrowded" pages
+                        for (int i = 0; i < pages.Count; i++)
+                        {
+                            if (pages[i].Count > rowSize * columnSize)
+                            {
+                                // Add a new page if needed
+                                if (i + 1 == pages.Count)
+                                    pages.Add(new PanoramaPanelPage());
+
+                                // Remove the last element from the page
+                                var cascade = pages[i][rowSize * columnSize];
+                                pages[i].RemoveAt(rowSize * columnSize);
+                                pages[i + 1].Insert(0, cascade);
+                            }
+                        }
+
                         // Update Layout
                         UpdateFluidLayout(true);
                     }

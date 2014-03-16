@@ -39,60 +39,22 @@ namespace Launcher.Panel
 
         private PanoramaPanel panel;
         private DelayScheduler scheduler;
-
+        
         #endregion
-
-        #region Dependency Properties
-
-        /// <summary>
-        ///     DragButton Dependency Property.
-        /// </summary>
-        public static readonly DependencyProperty DragButtonProperty =
-            DependencyProperty.Register("DragButton", typeof(MouseButton), typeof(PanoramaPanelDragBehavior),
-                new PropertyMetadata(MouseButton.Left));
-
-        /// <summary>
-        ///     DragDelay Dependency Property.
-        /// </summary>
-        public static readonly DependencyProperty DragDelayProperty =
-            DependencyProperty.Register("DragDelay", typeof(TimeSpan), typeof(PanoramaPanelDragBehavior),
-                new PropertyMetadata(TimeSpan.FromMilliseconds(300)));
-
-        /// <summary>
-        ///     Gets or sets the mouse button that initiates the drag operation.
-        /// </summary>
-        public MouseButton DragButton
-        {
-            get { return (MouseButton) GetValue(DragButtonProperty); }
-            set { SetValue(DragButtonProperty, value); }
-        }
-
-        /// <summary>
-        ///     Gets or sets the delay before the drag operation is initialized.
-        ///     In other words, the "click-and-hold" delay.
-        /// </summary>
-        public TimeSpan DragDelay
-        {
-            get { return (TimeSpan) GetValue(DragDelayProperty); }
-            set { SetValue(DragDelayProperty, value); }
-        }
-
-        #endregion
-
+        
         #region Attach/Detach
 
         private void Loaded(Object sender, EventArgs e)
         {
+            // Get the parent PanoramaPanel
+            panel = VisualTreeHelper.GetParent(AssociatedObject) as PanoramaPanel;
+
+            // If there is no parent PanoramaPanel, disable this behavior
+            if (panel == null)
+                return;
+
             // Set up the delay scheduler
             scheduler = new DelayScheduler(AssociatedObject.Dispatcher);
-
-            // Get the parent PanoramaPanel
-            FrameworkElement ancestor = AssociatedObject as FrameworkElement;
-            while (panel == null && ancestor != null)
-            {
-                panel = ancestor as PanoramaPanel;
-                ancestor = VisualTreeHelper.GetParent(ancestor) as FrameworkElement;
-            }
 
             // Subscribe to related events
             AssociatedObject.PreviewMouseDown += PreviewMouseDown;
@@ -102,30 +64,19 @@ namespace Launcher.Panel
 
         protected override void OnAttached()
         {
-            FrameworkElement @object = AssociatedObject as FrameworkElement;
-            if (@object == null)
-            {
-                throw new Exception("Unexpected AssociatedObject type: Expected FrameworkElement but received " +
-                                    AssociatedObject.GetType().Name);
-            }
-
-            @object.Loaded += Loaded;
+            AssociatedObject.Loaded += Loaded;
         }
 
         protected override void OnDetaching()
         {
-            FrameworkElement @object = AssociatedObject as FrameworkElement;
-            if (@object == null)
+            AssociatedObject.Loaded -= Loaded;
+
+            if (panel != null)
             {
-                throw new Exception("Unexpected AssociatedObject type: Expected FrameworkElement but received " +
-                                    AssociatedObject.GetType().Name);
+                AssociatedObject.PreviewMouseDown -= PreviewMouseDown;
+                AssociatedObject.PreviewMouseMove -= PreviewMouseMove;
+                AssociatedObject.PreviewMouseUp -= PreviewMouseUp;
             }
-
-            @object.Loaded -= Loaded;
-
-            AssociatedObject.PreviewMouseDown -= PreviewMouseDown;
-            AssociatedObject.PreviewMouseMove -= PreviewMouseMove;
-            AssociatedObject.PreviewMouseUp -= PreviewMouseUp;
         }
 
         #endregion
@@ -134,9 +85,9 @@ namespace Launcher.Panel
 
         private void PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == DragButton)
+            if (e.ChangedButton == panel.DragButton)
             {
-                scheduler.Schedule(DragDelay, () =>
+                scheduler.Schedule(panel.DragDelay, () =>
                 {
                     // Check if mouse is still in bounds
                     if (!AssociatedObject.IsMouseOver)
@@ -163,7 +114,7 @@ namespace Launcher.Panel
             // Determine whether the appropriate mouse button is down.
             // this way is so messy... come on .Net
             bool isDragging = false;
-            switch (DragButton)
+            switch (panel.DragButton)
             {
                 case MouseButton.Left:
                     isDragging = e.LeftButton == MouseButtonState.Pressed;
@@ -197,7 +148,7 @@ namespace Launcher.Panel
 
         private void PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == DragButton)
+            if (e.ChangedButton == panel.DragButton)
             {
                 // Cancel scheduled response
                 scheduler.Cancel();
