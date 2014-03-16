@@ -341,7 +341,6 @@ namespace Launcher.Panel
         #region Drag & Drop
 
         private Point dragStart;
-        private UIElement dragged;
         private UIElement dragging;
         private Int32 dragSourcePage;
         private Int32 dragSourceIndex;
@@ -367,7 +366,6 @@ namespace Launcher.Panel
                 dragSourceIndex = GetCellIndex(position);
                 // 
                 dragging = child;
-                dragged = null;
             });
         }
 
@@ -415,7 +413,9 @@ namespace Launcher.Panel
                             {
                                 // Add a new page if needed
                                 if (i + 1 == pages.Count)
+                                {
                                     pages.Add(new PanoramaPanelPage());
+                                }
 
                                 // Remove the last element from the page
                                 var cascade = pages[i][rowSize * columnSize];
@@ -443,14 +443,11 @@ namespace Launcher.Panel
 
             Dispatcher.Invoke(() =>
             {
-                // Get current page/cell
-                var page = GetPageIndex(position);
-                var cell = GetCellIndex(position);
-                var grid = GetGridRect(page);
-                if (page < 0 || page >= pages.Count || !grid.Contains(position))
+                // Remove empty pages
+                for (int i = pages.Count - 1; i >= 0; i--)
                 {
-                    page = dragSourcePage;
-                    cell = dragSourceIndex;
+                    if (pages[i].Count == 0)
+                        pages.RemoveAt(i);
                 }
                 
                 // Reset opacity
@@ -458,8 +455,6 @@ namespace Launcher.Panel
                 child.SetValue(ZIndexProperty, TransitionZ);
                 child.ReleaseMouseCapture();
 
-                // Keep a reference
-                dragged = dragging;
                 dragging = null;
                 
                 UpdateFluidLayout(true);

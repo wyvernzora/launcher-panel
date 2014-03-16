@@ -160,6 +160,9 @@ namespace Launcher.Panel
                     Point positionInParent = e.GetPosition(panel);
                     panel.OnDragEnd(AssociatedObject, position, positionInParent);
                 }
+
+                // Suppress Click event
+                e.Handled = true;
             }
         }
 

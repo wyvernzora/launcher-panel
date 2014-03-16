@@ -196,7 +196,5 @@ namespace Launcher.Panel
         #endregion
 
         #endregion
-
-
     }
 }
