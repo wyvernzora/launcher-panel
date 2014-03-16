@@ -175,7 +175,7 @@ namespace Launcher.Panel
         protected Rect GetPageRect(Int32 index)
         {
             //var index = pages.IndexOf(page);
-            if (index < 0) throw new Exception("Page not found.");
+            //if (index < 0) throw new Exception("Page not found.");
 
             return Orientation == Orientation.Horizontal ? 
                 new Rect(index * PageWidth, 0, PageWidth, PageHeight) : 
@@ -386,23 +386,33 @@ namespace Launcher.Panel
                 var page = GetPageIndex(position);
                 var cell = GetCellIndex(position);
 
-                // If the location is valid...
-                if (page >= 0 && page < pages.Count && cell >= 0 && cell < pages[page].Count
-                    && pages[page][cell] != dragging)
+
+                // Make sure the page is valid
+                if (page >= 0 && page < pages.Count)
                 {
-                    // Remove the element from the drag source
-                    pages[dragSourcePage].RemoveAt(dragSourceIndex);
+                    // If the cell is invalid, make it the last cell in the list
+                    var grid = GetGridRect(page);
+                    if (!grid.Contains(position))
+                        cell = (rowSize * columnSize) - 1;
 
-                    // Insert it into the current position
-                    pages[page].Insert(cell, dragging);
+                    // No need to update if the element is already there
+                    if (pages[page][cell] != dragging)
+                    {
+                        // Remove the element from the drag source
+                        pages[dragSourcePage].RemoveAt(dragSourceIndex);
 
-                    // Set new drag source
-                    dragSourcePage = page;
-                    dragSourceIndex = cell;
+                        // Insert it into the current position
+                        pages[page].Insert(cell, dragging);
 
-                    // Update Layout
-                    UpdateFluidLayout(true);
+                        // Set new drag source
+                        dragSourcePage = page;
+                        dragSourceIndex = cell;
+
+                        // Update Layout
+                        UpdateFluidLayout(true);
+                    }
                 }
+
 
 
                 // TODO Update Layout on move

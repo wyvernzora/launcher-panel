@@ -175,14 +175,17 @@ namespace Launcher.Panel
 
         public void RemoveAt(int index)
         {
-            children.RemoveAt(index);
+            if (index < children.Count)
+                children.RemoveAt(index);
+            else
+                children.RemoveAt(children.Count - 1);
         }
 
         public UIElement this[int index]
         {
             get
             {
-                return children[index];
+                return index < children.Count ? children[index] : children[children.Count - 1];
             }
             set
             {
