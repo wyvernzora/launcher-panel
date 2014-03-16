@@ -1,10 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Launcher.Panel/PanoramaPanel.cs
+// --------------------------------------------------------------------------------
+// Copyright (c) 2014, Jieni Luchijinzhou a.k.a Aragorn Wyvernzora
+// 
+// This file is a part of Launcher.Panel.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy 
+// of this software and associated documentation files (the "Software"), to deal 
+// in the Software without restriction, including without limitation the rights 
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
+// of the Software, and to permit persons to whom the Software is furnished to do 
+// so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all 
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -15,48 +35,92 @@ using CPanel = System.Windows.Controls.Panel;
 namespace Launcher.Panel
 {
     /// <summary>
-    /// Paged wrap panel with fluid drag-and-drop behavior.
-    /// Does not include scrolling functionality.
+    ///     Paged wrap panel with fluid drag-and-drop behavior.
+    ///     Does not include scrolling functionality.
     /// </summary>
     /// <remarks>
-    /// PanoramaPanel is not designed for use as an ItemPanel.
+    ///     PanoramaPanel is not designed for use as an ItemPanel.
     /// </remarks>
     [ContentProperty("Pages")]
     public partial class PanoramaPanel : CPanel
     {
         #region Nested Types
 
+        /// <summary>
+        /// PanoramaPanel Page Collection.
+        /// Delegates adding/removing operations.
+        /// </summary>
         public sealed class PageCollection : UIElementCollection
         {
             private readonly PanoramaPanel parent;
 
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="panel">Parent panel.</param>
             public PageCollection(PanoramaPanel panel)
                 : base(panel, panel)
             {
                 parent = panel;
             }
 
-            public override int Add(UIElement element)
-            {
-                var page = element as PanoramaPanelPage;
-                if (page == null) throw new Exception("LauncherPanelPage expected!");
-
-                parent.AddPage(page);
-                return base.Add(element);
-            }
-
-            public override void Remove(UIElement element)
-            {
-                var page = element as PanoramaPanelPage;
-                if (page == null) throw new Exception("LauncherPanelPage expected!");
-
-                parent.RemovePage(page);
-                base.Remove(element);
-            }
-
+            /// <summary>
+            /// Gets the page at the specified index.
+            /// </summary>
+            /// <param name="index"></param>
+            /// <returns></returns>
             public new PanoramaPanelPage this[Int32 index]
             {
                 get { return (PanoramaPanelPage) base[index]; }
+            }
+
+            /// <summary>
+            /// Adds a page to the collection.
+            /// </summary>
+            /// <param name="element"></param>
+            /// <returns></returns>
+            public override int Add(UIElement element)
+            {
+                PanoramaPanelPage page = element as PanoramaPanelPage;
+                if (page == null)
+                    throw new Exception("LauncherPanelPage expected!");
+
+                //parent.AddPage(page);
+                // Set up the page's parent reference
+                page.Parent = parent;
+
+                // Add children of the page to the parent
+                foreach (UIElement c in page)
+                    parent.Children.Add(c);
+
+                // Disable transitions and refresh layout
+                parent.disableAnimation = true;
+                parent.InvalidateVisual();
+
+                return base.Add(element);
+            }
+
+            /// <summary>
+            /// Removes a page from the collection.
+            /// </summary>
+            /// <param name="element"></param>
+            public override void Remove(UIElement element)
+            {
+                PanoramaPanelPage page = element as PanoramaPanelPage;
+                if (page == null)
+                    throw new Exception("LauncherPanelPage expected!");
+
+                //parent.RemovePage(page);
+
+                // Remove children from the parent
+                foreach (UIElement child in page)
+                    parent.Children.Remove(child);
+
+                // Refresh parent layout
+                parent.disableAnimation = true;
+                parent.InvalidateVisual();
+
+                base.Remove(element);
             }
         }
 
@@ -64,9 +128,12 @@ namespace Launcher.Panel
 
         protected Int32 rowSize;
         protected Int32 columnSize;
-        protected Boolean disableAnimation;
         protected PageCollection pages;
-        
+        protected Boolean disableAnimation;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public PanoramaPanel()
         {
             pages = new PageCollection(this);
@@ -75,14 +142,16 @@ namespace Launcher.Panel
         #region Properties
 
         /// <summary>
-        /// Gets the number of pages in the PanoramaPanel.
+        ///     Gets the number of pages in the PanoramaPanel.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Int32 PageCount
-        { get { return pages.Count; } }
+        {
+            get { return pages.Count; }
+        }
 
         /// <summary>
-        /// Gets the list of pages in the PanoramaPanel.
+        ///     Gets the list of pages in the PanoramaPanel.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public PageCollection Pages
@@ -95,32 +164,32 @@ namespace Launcher.Panel
         protected override Size MeasureOverride(Size availableSize)
         {
             // There are no size constrains
-            var size = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
-            
+            Size size = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
+
             // Measure children
             foreach (UIElement child in InternalChildren)
                 child.Measure(size);
-            
+
             // Calculate the desired size
-            return Orientation == Orientation.Horizontal ?
-                new Size(PageWidth * PageCount, PageHeight) :
-                new Size(PageWidth, PageHeight * PageCount);
+            return Orientation == Orientation.Horizontal
+                ? new Size(PageWidth * PageCount, PageHeight)
+                : new Size(PageWidth, PageHeight * PageCount);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var needEasing = !disableAnimation;
+            bool needEasing = !disableAnimation;
 
             // If animation is disabled, reinitialize the layout
             if (disableAnimation && Children.Count > 0)
             {
                 for (int p = 0; p < pages.Count; p++)
                 {
-                    var page = pages[p];
+                    PanoramaPanelPage page = pages[p];
                     for (int i = 0; i < page.Count; i++)
                     {
                         // Get the cell position
-                        var cell = GetCellRect(p, i);
+                        Rect cell = GetCellRect(p, i);
 
                         // Arrange the element at (0, 0)...
                         page[i].Arrange(new Rect(0, 0, CellWidth, CellHeight));
@@ -151,11 +220,11 @@ namespace Launcher.Panel
             {
                 for (int p = 0; p < pages.Count; p++)
                 {
-                    var page = pages[p];
+                    PanoramaPanelPage page = pages[p];
                     for (int i = 0; i < page.Count; i++)
                     {
-                        var cell = GetCellRect(p, i);
-                        var transition = CreateTransition(page[i], new Point(cell.X, cell.Y),
+                        Rect cell = GetCellRect(p, i);
+                        Storyboard transition = CreateTransition(page[i], new Point(cell.X, cell.Y),
                             TimeSpan.FromMilliseconds(DefaultTransitionDuration), Easing);
 
                         transition.Completed += (s, e) =>
@@ -177,15 +246,15 @@ namespace Launcher.Panel
             //var index = pages.IndexOf(page);
             //if (index < 0) throw new Exception("Page not found.");
 
-            return Orientation == Orientation.Horizontal ? 
-                new Rect(index * PageWidth, 0, PageWidth, PageHeight) : 
-                new Rect(0, index * PageHeight, PageWidth, PageHeight);
+            return Orientation == Orientation.Horizontal
+                ? new Rect(index * PageWidth, 0, PageWidth, PageHeight)
+                : new Rect(0, index * PageHeight, PageWidth, PageHeight);
         }
 
         protected Rect GetGridRect(Int32 page)
         {
             // Get the available rect
-            var pageRect = GetPageRect(page);
+            Rect pageRect = GetPageRect(page);
 
             rowSize = (Int32) Math.Floor(PageWidth / CellWidth);
             columnSize = (Int32) Math.Floor(PageHeight / CellHeight);
@@ -194,8 +263,8 @@ namespace Launcher.Panel
             if (columnSize <= 0)
                 columnSize = 1;
 
-            var x = pageRect.X + (PageWidth - rowSize * CellWidth) / 2.0;
-            var y = pageRect.Y + (PageHeight - columnSize * CellHeight) / 2.0;
+            double x = pageRect.X + (PageWidth - rowSize * CellWidth) / 2.0;
+            double y = pageRect.Y + (PageHeight - columnSize * CellHeight) / 2.0;
 
             return new Rect(x, y, rowSize * CellWidth, columnSize * CellHeight);
         }
@@ -203,11 +272,11 @@ namespace Launcher.Panel
         protected Rect GetCellRect(Int32 page, Int32 index)
         {
             // Get the rectangle of the grid for the page
-            var gridRect = GetGridRect(page);
+            Rect gridRect = GetGridRect(page);
 
             // Get x and y positions of the cell
-            var x = gridRect.X + index % rowSize * CellWidth;
-            var y = gridRect.Y + Math.Floor((Double)index / columnSize) * CellHeight;
+            double x = gridRect.X + index % rowSize * CellWidth;
+            double y = gridRect.Y + Math.Floor((Double) index / columnSize) * CellHeight;
 
             return new Rect(x, y, CellWidth, CellHeight);
         }
@@ -223,13 +292,13 @@ namespace Launcher.Panel
         protected Int32 GetCellIndex(Point point)
         {
             // Get the page index
-            var pageIndex = GetPageIndex(point);
+            int pageIndex = GetPageIndex(point);
 
             // Convert to point relative to the page grid
-            var pageGrid = GetGridRect(pageIndex);
+            Rect pageGrid = GetGridRect(pageIndex);
             point.X -= pageGrid.X;
             point.Y -= pageGrid.Y;
-            
+
             return (Int32) (Math.Floor(point.X / CellWidth) + Math.Floor(point.Y / CellHeight) * rowSize);
         }
 
@@ -238,7 +307,7 @@ namespace Launcher.Panel
         #region Layout & Transitions
 
         /// <summary>
-        /// Creates tranfrorm for a UI element.
+        ///     Creates tranfrorm for a UI element.
         /// </summary>
         /// <param name="translateX">Translation offset along the X axis.</param>
         /// <param name="translateY">Translation offset along the Y axis.</param>
@@ -247,10 +316,10 @@ namespace Launcher.Panel
         /// <returns></returns>
         protected TransformGroup CreateTransform(double translateX, double translateY, double scaleX, double scaleY)
         {
-            var translate = new TranslateTransform { X = translateX, Y = translateY };
-            var scale = new ScaleTransform(scaleX, scaleY);
+            TranslateTransform translate = new TranslateTransform {X = translateX, Y = translateY};
+            ScaleTransform scale = new ScaleTransform(scaleX, scaleY);
 
-            var group = new TransformGroup();
+            TransformGroup group = new TransformGroup();
             group.Children.Add(scale);
             group.Children.Add(translate);
 
@@ -258,44 +327,49 @@ namespace Launcher.Panel
         }
 
         /// <summary>
-        /// Creates the transition animation for an element.
+        ///     Creates the transition animation for an element.
         /// </summary>
         /// <param name="element">Child element to move.</param>
         /// <param name="position">New position of the child element.</param>
         /// <param name="duration">Duration of the animation.</param>
         /// <returns></returns>
-        protected Storyboard CreateTransition(UIElement element, Point position, TimeSpan duration, EasingFunctionBase easing)
+        protected Storyboard CreateTransition(UIElement element, Point position, TimeSpan duration,
+            EasingFunctionBase easing)
         {
             // Animate along X axis
-            var tx = new DoubleAnimation { To = position.X, Duration = duration };
+            DoubleAnimation tx = new DoubleAnimation {To = position.X, Duration = duration};
             if (Easing != null)
                 tx.EasingFunction = easing;
             Storyboard.SetTarget(tx, element);
-            Storyboard.SetTargetProperty(tx, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"));
+            Storyboard.SetTargetProperty(tx,
+                new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"));
 
             // Animate along Y axis
-            var ty = new DoubleAnimation { To = position.Y, Duration = duration };
+            DoubleAnimation ty = new DoubleAnimation {To = position.Y, Duration = duration};
             if (Easing != null)
                 ty.EasingFunction = easing;
             Storyboard.SetTarget(ty, element);
-            Storyboard.SetTargetProperty(ty, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"));
+            Storyboard.SetTargetProperty(ty,
+                new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"));
 
             // Animate X axis scale
-            var sx = new DoubleAnimation { To = 1.0D, Duration = duration };
+            DoubleAnimation sx = new DoubleAnimation {To = 1.0D, Duration = duration};
             if (Easing != null)
                 sx.EasingFunction = easing;
             Storyboard.SetTarget(sx, element);
-            Storyboard.SetTargetProperty(sx, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"));
+            Storyboard.SetTargetProperty(sx,
+                new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"));
 
             // Animate Y axis scale
-            var sy = new DoubleAnimation { To = 1.0D, Duration = duration };
+            DoubleAnimation sy = new DoubleAnimation {To = 1.0D, Duration = duration};
             if (Easing != null)
                 sy.EasingFunction = easing;
             Storyboard.SetTarget(sy, element);
-            Storyboard.SetTargetProperty(sy, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"));
+            Storyboard.SetTargetProperty(sy,
+                new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"));
 
             // Assemble animation
-            var board = new Storyboard { Duration = duration };
+            Storyboard board = new Storyboard {Duration = duration};
             board.Children.Add(tx);
             board.Children.Add(ty);
             board.Children.Add(sx);
@@ -309,41 +383,12 @@ namespace Launcher.Panel
 
         #endregion
 
-        #region Child Management
-
-        internal void AddPage(PanoramaPanelPage page)
-        {
-            // Set page's parent
-            page.Parent = this;
-
-            // Add all children to the panel
-            foreach (var child in page.Children)
-                Children.Add(child);
-
-            // Refresh layout
-            disableAnimation = true;
-            InvalidateVisual();
-        }
-
-        internal void RemovePage(PanoramaPanelPage page)
-        {
-            // Remove all children
-            foreach (var child in page.Children)
-                Children.Remove(child);
-
-            // Refresh layoutt
-            disableAnimation = true;
-            InvalidateVisual();
-        }
-
-        #endregion
-
         #region Drag & Drop
 
+        private Int32 dragSourceCell;
+        private Int32 dragSourcePage;
         private Point dragStart;
         private UIElement dragging;
-        private Int32 dragSourcePage;
-        private Int32 dragSourceIndex;
 
         internal void OnDragStart(FrameworkElement child, Point origin, Point position)
         {
@@ -357,13 +402,13 @@ namespace Launcher.Panel
                 // Dragging point within the moving element
                 dragStart = new Point(origin.X * DragScale, origin.Y * DragScale);
                 // Apply transform without moving the element
-                var translatePosition = child.TranslatePoint(new Point(-child.Margin.Left, -child.Margin.Top), this);
+                Point translatePosition = child.TranslatePoint(new Point(-child.Margin.Left, -child.Margin.Top), this);
                 child.RenderTransform = CreateTransform(translatePosition.X, translatePosition.Y, DragScale, DragScale);
                 // Capture further mouse events
                 child.CaptureMouse();
                 // Record the initial position of the element
                 dragSourcePage = GetPageIndex(position);
-                dragSourceIndex = GetCellIndex(position);
+                dragSourceCell = GetCellIndex(position);
                 // 
                 dragging = child;
             });
@@ -381,15 +426,15 @@ namespace Launcher.Panel
                     DragScale);
 
                 // Get current position of the dragging operation
-                var page = GetPageIndex(position);
-                var cell = GetCellIndex(position);
+                int page = GetPageIndex(position);
+                int cell = GetCellIndex(position);
 
 
                 // Make sure the page is valid
                 if (page >= 0 && page < pages.Count)
                 {
                     // If the cell is invalid, make it the last cell in the list
-                    var grid = GetGridRect(page);
+                    Rect grid = GetGridRect(page);
                     if (!grid.Contains(position))
                         cell = (rowSize * columnSize) - 1;
 
@@ -397,14 +442,14 @@ namespace Launcher.Panel
                     if (pages[page][cell] != dragging)
                     {
                         // Remove the element from the drag source
-                        pages[dragSourcePage].RemoveAt(dragSourceIndex);
+                        pages[dragSourcePage].RemoveAt(dragSourceCell);
 
                         // Insert it into the current position
                         pages[page].Insert(cell, dragging);
 
                         // Set new drag source
                         dragSourcePage = page;
-                        dragSourceIndex = cell;
+                        dragSourceCell = cell;
 
                         // Cascade elements from "overcrowded" pages
                         for (int i = 0; i < pages.Count; i++)
@@ -413,12 +458,10 @@ namespace Launcher.Panel
                             {
                                 // Add a new page if needed
                                 if (i + 1 == pages.Count)
-                                {
                                     pages.Add(new PanoramaPanelPage());
-                                }
 
                                 // Remove the last element from the page
-                                var cascade = pages[i][rowSize * columnSize];
+                                UIElement cascade = pages[i][rowSize * columnSize];
                                 pages[i].RemoveAt(rowSize * columnSize);
                                 pages[i + 1].Insert(0, cascade);
                             }
@@ -428,11 +471,6 @@ namespace Launcher.Panel
                         UpdateFluidLayout(true);
                     }
                 }
-
-
-
-                // TODO Update Layout on move
-
             });
         }
 
@@ -449,14 +487,14 @@ namespace Launcher.Panel
                     if (pages[i].Count == 0)
                         pages.RemoveAt(i);
                 }
-                
+
                 // Reset opacity
                 child.Opacity = DefaultOpacity;
                 child.SetValue(ZIndexProperty, TransitionZ);
                 child.ReleaseMouseCapture();
 
                 dragging = null;
-                
+
                 UpdateFluidLayout(true);
             });
         }

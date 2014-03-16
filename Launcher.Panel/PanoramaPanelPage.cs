@@ -86,6 +86,8 @@ namespace Launcher.Panel
         public void Add(UIElement item)
         {
             children.Add(item);
+            if (panel != null)
+                panel.Children.Add(item);
         }
 
         /// <summary>
@@ -93,6 +95,9 @@ namespace Launcher.Panel
         /// </summary>
         public void Clear()
         {
+            if (panel != null)
+                foreach (var child in children)
+                    Parent.Children.Remove(child);
             children.Clear();
         }
 
@@ -139,6 +144,8 @@ namespace Launcher.Panel
         /// <returns></returns>
         public bool Remove(UIElement item)
         {
+            if (panel != null)
+                panel.Children.Remove(item);
             return children.Remove(item);
         }
 

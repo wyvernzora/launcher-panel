@@ -4,10 +4,13 @@
         xmlns:lp="clr-namespace:Launcher.Panel;assembly=Launcher.Panel"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="Launcher.Panel.Sandbox.MainWindow"
         Title="MainWindow" ResizeMode="NoResize" Width="1280" Height="720">
+	<Window.Resources>
+		<SolidColorBrush x:Key="Brush1" Color="#FF2C2C2C"/>
+	</Window.Resources>
 	<ScrollViewer x:Name="grid" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-		<Grid>
+		<Grid Background="{DynamicResource Brush1}">
 			<lp:PanoramaPanel HorizontalAlignment="Center" Margin="20" VerticalAlignment="Center" 
-				CellHeight="100" CellWidth="100" Background="#FF2C2C2C" PageHeight="398" PageWidth="398" DragOpacity="0.6">
+				CellHeight="100" CellWidth="100" Background="{DynamicResource Brush1}" PageHeight="398" PageWidth="398" DragOpacity="0.6">
 				<lp:PanoramaPanel.Easing>
 					<BackEase EasingMode="EaseOut" Amplitude="0.35"/>
 				</lp:PanoramaPanel.Easing>
