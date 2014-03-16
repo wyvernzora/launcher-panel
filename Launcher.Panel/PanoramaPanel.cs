@@ -157,6 +157,13 @@ namespace Launcher.Panel
                         var cell = GetCellRect(p, i);
                         var transition = CreateTransition(page[i], new Point(cell.X, cell.Y),
                             TimeSpan.FromMilliseconds(DefaultTransitionDuration), Easing);
+
+                        transition.Completed += (s, e) =>
+                        {
+                            if (dragging != null)
+                                dragging.SetValue(ZIndexProperty, DragZ);
+                        };
+
                         transition.Begin();
                     }
                 }

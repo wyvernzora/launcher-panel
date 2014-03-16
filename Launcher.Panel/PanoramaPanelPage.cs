@@ -167,7 +167,10 @@ namespace Launcher.Panel
 
         public void Insert(int index, UIElement item)
         {
-            children.Insert(index, item);
+            if (index < Count)
+                children.Insert(index, item);
+            else
+                children.Add(item);
         }
 
         public void RemoveAt(int index)

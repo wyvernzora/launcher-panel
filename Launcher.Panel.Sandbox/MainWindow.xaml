@@ -4,7 +4,7 @@
         xmlns:lp="clr-namespace:Launcher.Panel;assembly=Launcher.Panel"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="Launcher.Panel.Sandbox.MainWindow"
         Title="MainWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
-	<Grid x:Name="grid" Width="398" Height="398">
+	<Grid x:Name="grid" Width="796" Height="398">
 		<lp:PanoramaPanel HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" 
 			CellHeight="100" CellWidth="100" Background="#FF2C2C2C" PageHeight="398" PageWidth="398" DragOpacity="0.6">
 			<lp:PanoramaPanel.Easing>

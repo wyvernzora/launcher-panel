@@ -1,10 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Launcher.Panel/PanoramaPanelDragBehavior.cs
+// --------------------------------------------------------------------------------
+// Copyright (c) 2014, Jieni Luchijinzhou a.k.a Aragorn Wyvernzora
+// 
+// This file is a part of Launcher.Panel.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy 
+// of this software and associated documentation files (the "Software"), to deal 
+// in the Software without restriction, including without limitation the rights 
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
+// of the Software, and to permit persons to whom the Software is furnished to do 
+// so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all 
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
@@ -13,32 +32,34 @@ using System.Windows.Media;
 namespace Launcher.Panel
 {
     /// <summary>
-    /// 
     /// </summary>
     public class PanoramaPanelDragBehavior : Behavior<FrameworkElement>
     {
         #region Fields
 
-        private DelayScheduler scheduler;
         private PanoramaPanel panel;
+        private DelayScheduler scheduler;
 
         #endregion
-
-        public PanoramaPanelDragBehavior()
-        {
-        }
 
         #region Dependency Properties
 
         /// <summary>
-        /// DragButton Dependency Property.
+        ///     DragButton Dependency Property.
         /// </summary>
         public static readonly DependencyProperty DragButtonProperty =
             DependencyProperty.Register("DragButton", typeof(MouseButton), typeof(PanoramaPanelDragBehavior),
                 new PropertyMetadata(MouseButton.Left));
 
         /// <summary>
-        /// Gets or sets the mouse button that initiates the drag operation.
+        ///     DragDelay Dependency Property.
+        /// </summary>
+        public static readonly DependencyProperty DragDelayProperty =
+            DependencyProperty.Register("DragDelay", typeof(TimeSpan), typeof(PanoramaPanelDragBehavior),
+                new PropertyMetadata(TimeSpan.FromMilliseconds(300)));
+
+        /// <summary>
+        ///     Gets or sets the mouse button that initiates the drag operation.
         /// </summary>
         public MouseButton DragButton
         {
@@ -47,15 +68,8 @@ namespace Launcher.Panel
         }
 
         /// <summary>
-        /// DragDelay Dependency Property.
-        /// </summary>
-        public static readonly DependencyProperty DragDelayProperty =
-            DependencyProperty.Register("DragDelay", typeof(TimeSpan), typeof(PanoramaPanelDragBehavior),
-                new PropertyMetadata(TimeSpan.FromMilliseconds(300)));
-
-        /// <summary>
-        /// Gets or sets the delay before the drag operation is initialized.
-        /// In other words, the "click-and-hold" delay.
+        ///     Gets or sets the delay before the drag operation is initialized.
+        ///     In other words, the "click-and-hold" delay.
         /// </summary>
         public TimeSpan DragDelay
         {
@@ -73,7 +87,7 @@ namespace Launcher.Panel
             scheduler = new DelayScheduler(AssociatedObject.Dispatcher);
 
             // Get the parent PanoramaPanel
-            var ancestor = AssociatedObject as FrameworkElement;
+            FrameworkElement ancestor = AssociatedObject as FrameworkElement;
             while (panel == null && ancestor != null)
             {
                 panel = ancestor as PanoramaPanel;
@@ -88,17 +102,24 @@ namespace Launcher.Panel
 
         protected override void OnAttached()
         {
-            var @object = AssociatedObject as FrameworkElement;
-            if (@object == null) throw new Exception("Unexpected AssociatedObject type: Expected FrameworkElement but received " + AssociatedObject.GetType().Name);
+            FrameworkElement @object = AssociatedObject as FrameworkElement;
+            if (@object == null)
+            {
+                throw new Exception("Unexpected AssociatedObject type: Expected FrameworkElement but received " +
+                                    AssociatedObject.GetType().Name);
+            }
 
             @object.Loaded += Loaded;
         }
 
         protected override void OnDetaching()
         {
-            var @object = AssociatedObject as FrameworkElement;
+            FrameworkElement @object = AssociatedObject as FrameworkElement;
             if (@object == null)
-                throw new Exception("Unexpected AssociatedObject type: Expected FrameworkElement but received " + AssociatedObject.GetType().Name);
+            {
+                throw new Exception("Unexpected AssociatedObject type: Expected FrameworkElement but received " +
+                                    AssociatedObject.GetType().Name);
+            }
 
             @object.Loaded -= Loaded;
 
@@ -122,7 +143,7 @@ namespace Launcher.Panel
                         return;
 
                     // Get mouse position
-                    var position = Mouse.GetPosition(AssociatedObject);
+                    Point position = Mouse.GetPosition(AssociatedObject);
                     if (panel != null)
                         panel.OnDragStart(AssociatedObject, position, Mouse.GetPosition(panel));
                 });
@@ -141,7 +162,7 @@ namespace Launcher.Panel
 
             // Determine whether the appropriate mouse button is down.
             // this way is so messy... come on .Net
-            var isDragging = false;
+            bool isDragging = false;
             switch (DragButton)
             {
                 case MouseButton.Left:
@@ -164,11 +185,11 @@ namespace Launcher.Panel
             // Notify PagedPanel when needed
             if (isDragging)
             {
-                var position = e.GetPosition(AssociatedObject);
+                Point position = e.GetPosition(AssociatedObject);
 
                 if (panel != null)
                 {
-                    var positionInParent = e.GetPosition(panel);
+                    Point positionInParent = e.GetPosition(panel);
                     panel.OnDragMove(AssociatedObject, position, positionInParent);
                 }
             }
@@ -180,12 +201,12 @@ namespace Launcher.Panel
             {
                 // Cancel scheduled response
                 scheduler.Cancel();
-                
+
                 // Notify PanoramaPanel
-                var position = Mouse.GetPosition(AssociatedObject);
+                Point position = Mouse.GetPosition(AssociatedObject);
                 if (panel != null)
                 {
-                    var positionInParent = e.GetPosition(panel);
+                    Point positionInParent = e.GetPosition(panel);
                     panel.OnDragEnd(AssociatedObject, position, positionInParent);
                 }
             }
