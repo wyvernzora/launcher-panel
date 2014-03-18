@@ -25,7 +25,8 @@ namespace Launcher.Panel.Sandbox
             InitializeComponent();
 
 
-
+            btnTest.Click += (s, e) =>
+                MessageBox.Show("Click!");
         }
     }
 }

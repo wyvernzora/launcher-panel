@@ -24,6 +24,7 @@
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
@@ -83,6 +84,8 @@ namespace Launcher.Panel
 
         #region Event Handlers
 
+        private Boolean dragInitiated;
+
         private void PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == panel.DragButton)
@@ -93,8 +96,13 @@ namespace Launcher.Panel
                     if (!AssociatedObject.IsMouseOver)
                         return;
 
+                    // Set drag initiated flag
+                    dragInitiated = true;
+
                     // Get mouse position
                     Point position = Mouse.GetPosition(AssociatedObject);
+
+                    // Notify the PanoramaPanel (if it's there)
                     if (panel != null)
                         panel.OnDragStart(AssociatedObject, position, Mouse.GetPosition(panel));
                 });
@@ -108,6 +116,7 @@ namespace Launcher.Panel
             {
                 //...if so, cancel the scheduled delay
                 scheduler.Cancel();
+                dragInitiated = false;
                 return;
             }
 
@@ -148,7 +157,7 @@ namespace Launcher.Panel
 
         private void PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == panel.DragButton)
+            if (dragInitiated && e.ChangedButton == panel.DragButton)
             {
                 // Cancel scheduled response
                 scheduler.Cancel();
@@ -161,8 +170,9 @@ namespace Launcher.Panel
                     panel.OnDragEnd(AssociatedObject, position, positionInParent);
                 }
 
-                // Suppress Click event
+                // Suppress Click event if drag-drop actually took place
                 e.Handled = true;
+                dragInitiated = false;
             }
         }
 

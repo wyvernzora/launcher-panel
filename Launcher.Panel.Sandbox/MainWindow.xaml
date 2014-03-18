@@ -9,7 +9,7 @@
 	</Window.Resources>
 	<ScrollViewer x:Name="grid" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 		<Grid Background="{DynamicResource Brush1}">
-			<lp:PanoramaPanel HorizontalAlignment="Center" Margin="20" VerticalAlignment="Center" 
+			<lp:PanoramaPanel HorizontalAlignment="Left" Margin="20" VerticalAlignment="Center" 
 				CellHeight="100" CellWidth="100" Background="{DynamicResource Brush1}" PageHeight="398" PageWidth="398" DragOpacity="0.6">
 				<lp:PanoramaPanel.Easing>
 					<BackEase EasingMode="EaseOut" Amplitude="0.35"/>
@@ -60,6 +60,11 @@
 							<lp:PanoramaPanelDragBehavior/>
 						</i:Interaction.Behaviors>
 					</Border>
+					<Button x:Name="btnTest" Content="Button" HorizontalAlignment="Stretch" Margin="5" Width="90" Height="90">
+						<i:Interaction.Behaviors>
+							<lp:PanoramaPanelDragBehavior/>
+						</i:Interaction.Behaviors>
+					</Button>
 				</lp:PanoramaPanelPage>
 				<lp:PanoramaPanelPage>
 					<Border BorderBrush="Black" BorderThickness="1" Background="#FFF37CFF" Margin="5">
