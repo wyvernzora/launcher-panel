@@ -243,9 +243,6 @@ namespace Launcher.Panel
 
         protected Rect GetPageRect(Int32 index)
         {
-            //var index = pages.IndexOf(page);
-            //if (index < 0) throw new Exception("Page not found.");
-
             return Orientation == Orientation.Horizontal
                 ? new Rect(index * PageWidth, 0, PageWidth, PageHeight)
                 : new Rect(0, index * PageHeight, PageWidth, PageHeight);
@@ -276,7 +273,7 @@ namespace Launcher.Panel
 
             // Get x and y positions of the cell
             double x = gridRect.X + index % rowSize * CellWidth;
-            double y = gridRect.Y + Math.Floor((Double) index / columnSize) * CellHeight;
+            double y = gridRect.Y + Math.Floor((Double) index / rowSize) * CellHeight;
 
             return new Rect(x, y, CellWidth, CellHeight);
         }
